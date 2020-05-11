@@ -20,11 +20,9 @@ const dateFormat = (date, format)=> {
     format = format.replace(/YYYY/, date.getFullYear());
     format = format.replace(/MM/, date.getMonth() + 1);
     format = format.replace(/DD/, date.getDate());
-
     format = format.replace(/HH/, date.getHours());
     format = format.replace(/II/, date.getMinutes());
     format = format.replace(/SS/, date.getSeconds());
-
     return format;
 }
 const cron = require('node-cron');
@@ -92,7 +90,6 @@ const genkaiCheck = async () =>{
   await embeds.forEach(embed => {
     //console.dir(embed);
     channel.send({embed})});
-
 }
 
 client.on('ready', async() => {
