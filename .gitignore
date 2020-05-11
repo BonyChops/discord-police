@@ -1,0 +1,5 @@
+node_modules/
+accessToken.json
+settings.json
+genkaiData.json
+test.json
