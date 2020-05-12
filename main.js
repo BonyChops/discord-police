@@ -93,7 +93,7 @@ const genkaiCheck = async () =>{
 }
 
 const memberChecker = (msg) =>{
-  const members = await msg.guild.members.cache
+  const members = msg.guild.members.cache
   const human = members.filter(member => !member.user.bot);
   const bot = members.filter(member => member.user.bot);
   const embed = {
@@ -116,7 +116,7 @@ const memberChecker = (msg) =>{
       },
       {
         "name": "BOT率",
-        "value": `${bot.size / human.size}人`,
+        "value": `${(parseFloat(bot.size) / parseFloat(members.size))*100}%`,
         "inline": true
       }
     ]
