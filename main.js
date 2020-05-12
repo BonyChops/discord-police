@@ -18,11 +18,11 @@ const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 let realtimeScanDisable = false;
 const dateFormat = (date, format)=> {
     format = format.replace(/YYYY/, date.getFullYear());
-    format = format.replace(/MM/, date.getMonth() + 1);
-    format = format.replace(/DD/, date.getDate());
-    format = format.replace(/HH/, date.getHours());
-    format = format.replace(/II/, date.getMinutes());
-    format = format.replace(/SS/, date.getSeconds());
+    format = format.replace(/MM/, ('00' + date.getMonth() + 1).slice(-2));
+    format = format.replace(/DD/, ('00' + date.getDate()).slice(-2));
+    format = format.replace(/HH/, ('00' + date.getHours()).slice(-2));
+    format = format.replace(/II/, ('00' + date.getMinutes()).slice(-2));
+    format = format.replace(/SS/, ('00' + date.getSeconds()).slice(-2));
     return format;
 }
 const cron = require('node-cron');
