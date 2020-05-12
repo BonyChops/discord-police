@@ -92,6 +92,38 @@ const genkaiCheck = async () =>{
     channel.send({embed})});
 }
 
+const memberChecker = (msg) =>{
+  const members = await msg.guild.members.cache
+  const human = members.filter(member => !member.user.bot);
+  const bot = members.filter(member => member.user.bot);
+  const embed = {
+    "timestamp": "2020-05-12T11:45:24.711Z",
+    "fields": [
+      {
+        "name": "人間",
+        "value": `${human.size}人`,
+        "inline": true
+      },
+      {
+        "name": "BOT",
+        "value": `${bot.size}人`,
+        "inline": true
+      },
+      {
+        "name": "Total",
+        "value": `${members.size}人`,
+        "inline": true
+      },
+      {
+        "name": "BOT率",
+        "value": `${bot.size / human.size}人`,
+        "inline": true
+      }
+    ]
+  };
+  msg.channel.send({ embed });
+}
+
 client.on('ready', async() => {
     client.user.setPresence({
         status: "online",  //You can show online, idle....
@@ -169,12 +201,11 @@ client.on('message', async msg => {
               realtimeScanDisable = false;
               return;
             }
-
-
             msg.channel.send("```Command invalid.```");
             return;
         }
         if(msg.content.indexOf("!sushi") !== -1) sushi(msg);
+        if(msg.content.indexOf("!member") !== -1) memberChecker(msg);
         if(realtimeScanDisable){
           return
         }
