@@ -180,7 +180,7 @@ client.on('ready', async() => {
     channel = server.channels.cache.get(ids.channel);
     logCh =  server.channels.cache.get(ids.logCh);
     logCh.send({embed});
-    checkMemberActivity();
+    //checkMemberActivity();
 });
 
 client.on('message', async msg => {
