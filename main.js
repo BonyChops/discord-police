@@ -44,7 +44,10 @@ const checkMemberActivity = async() => {
     if(member.presence.activities.length == 0){
       console.log("No Data!!!");
     }else{
+      console.log(member.presence.activities[0].name);
+      console.log(member.presence.activities[0].details);
       console.dir(member.presence.activities);
+
     }
   })
 }
@@ -75,11 +78,18 @@ const genkaiCheck = async () =>{
     if(genkaiData[member.user.id] == null)genkaiData[member.user.id] = {};
     genkaiData[member.user.id].name = name;
     if(genkaiData[member.user.id].point == null) genkaiData[member.user.id].point = 0;
-    genkaiData[member.user.id].point += point;
+    let memberPointThisTime = point;
     let description = `${dateFormat(new Date(), 'HH:II')}にオンラインだったため**限界ポイント +${point}**付与いたします。`;
     if(member.presence.activities.length != 0){
-      description = description+`\nまた、あなたは${member.presence.activities.name}を使用していましたね？？この鯖は健康を目指しており、**深夜のゲームプレイ・開発は__厳重な違反です。**__`;
+      if (member.presence.activities[0].name == 'Visual Studio Code'){
+        description = description+`\nまた、あなたは${member.presence.activities[0].name}を使用していましたね？？(無論あなたが${member.presence.activities[0].state}で${member.presence.activities[0].details}であったことも知っています)\nこの鯖は健康を目指しており、**深夜のゲームプレイ・開発は__厳重な違反です。__**\nよって該当ユーザーには通常よりも多くの違反点をつけさせていただきます💢`;
+      }else{
+        description = description+`\nまた、あなたは${member.presence.activities[0].name}を使用していましたね？？\nこの鯖は健康を目指しており、**深夜のゲームプレイ・開発は__厳重な違反です。__**\nよって該当ユーザーには通常よりも多くの違反点をつけさせていただきます💢`;
+      }
+      memberPointThisTime *= 1.5;
     }
+    genkaiData[member.user.id].point += memberPointThisTime;
+
     embeds.push(
       {
         "title": name,
@@ -92,7 +102,7 @@ const genkaiCheck = async () =>{
         "fields": [
           {
             "name": "今回獲得した限界ポイント",
-            "value": point,
+            "value": memberPointThisTime,
             "inline": true
           },
           {
@@ -170,7 +180,7 @@ client.on('ready', async() => {
     channel = server.channels.cache.get(ids.channel);
     logCh =  server.channels.cache.get(ids.logCh);
     logCh.send({embed});
-    //checkMemberActivity();
+    checkMemberActivity();
 });
 
 client.on('message', async msg => {
