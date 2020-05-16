@@ -4,6 +4,7 @@ const fs = require('fs');
 const accessToken = JSON.parse(fs.readFileSync(__dirname+'/accessToken.json', 'utf8')).token;
 const ids = JSON.parse(fs.readFileSync(__dirname+'/settings.json', 'utf8'));
 let genkaiData;
+const googleTTS = require('google-tts-api');
 const saveGenkaiData = (data) => { fs.writeFile('genkaiData.json', JSON.stringify(data, null, '    '), (err)=>{if(err) console.log(`error!::${err}`)})};
 try{
   genkaiData = JSON.parse(fs.readFileSync(__dirname+'/genkaiData.json', 'utf8'));
@@ -36,8 +37,20 @@ cron.schedule('0,30 0-5 * * *', () => {
   genkaiCheck();
 });
 
+const checkMemberActivity = async() => {
+  const targetUser = await server.members.cache.filter(member => !member.user.bot && (member.presence.status == "online" ));
+  targetUser.forEach(member => {
+    console.log(member.user.username);
+    if(member.presence.activities.length == 0){
+      console.log("No Data!!!");
+    }else{
+      console.dir(member.presence.activities);
+    }
+  })
+}
+
 const genkaiCheck = async () =>{
-  const targetUser = await server.members.cache.filter(member => !member.user.bot && member.presence.status == "online");
+  const targetUser = await server.members.cache.filter(member => !member.user.bot && (member.presence.status == "online" || member.presence.activities.length != 0));
   //console.dir(targetUser);
   console.log(targetUser.size);
   if (targetUser.size === 0) {
@@ -63,10 +76,14 @@ const genkaiCheck = async () =>{
     genkaiData[member.user.id].name = name;
     if(genkaiData[member.user.id].point == null) genkaiData[member.user.id].point = 0;
     genkaiData[member.user.id].point += point;
+    let description = `${dateFormat(new Date(), 'HH:II')}にオンラインだったため**限界ポイント +${point}**付与いたします。`;
+    if(member.presence.activities.length != 0){
+      description = description+`\nまた、あなたは${member.presence.activities.name}を使用していましたね？？この鯖は健康を目指しており、**深夜のゲームプレイ・開発は__厳重な違反です。**__`;
+    }
     embeds.push(
       {
         "title": name,
-        "description": `${dateFormat(new Date(), 'HH:II')}にオンラインだったため**限界ポイント +${point}**付与いたします。`,
+        "description": description,
         "color": 12390624,
         "timestamp": new Date(),
         "thumbnail": {
@@ -153,9 +170,13 @@ client.on('ready', async() => {
     channel = server.channels.cache.get(ids.channel);
     logCh =  server.channels.cache.get(ids.logCh);
     logCh.send({embed});
+    //checkMemberActivity();
 });
 
 client.on('message', async msg => {
+
+
+  googleTTS('Hello World', 'en', 1)
     if(msg.author != client.user){
       if(msg.channel.id == ids.logCh) {msg.delete(); return;}
       if(msg.channel.id == ids.terminalCh){
