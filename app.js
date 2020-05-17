@@ -6,15 +6,20 @@ const ids = JSON.parse(fs.readFileSync(__dirname+'/settings.json', 'utf8'));
 let genkaiData;
 const googleTTS = require('google-tts-api');
 const saveGenkaiData = (data) => { fs.writeFile('genkaiData.json', JSON.stringify(data, null, '    '), (err)=>{if(err) console.log(`error!::${err}`)})};
+try {fs.statSync(__dirname+'apiLaunched.json'); }catch(e){ data = {"time": 0}; fs.writeFile(__dirname+'apiLaunched.json', JSON.stringify(data, null, '    '), (err)=>{if(err) console.log(`error!::${err}`)})};
+
 try{
   genkaiData = JSON.parse(fs.readFileSync(__dirname+'/genkaiData.json', 'utf8'));
 }catch(e){
   genkaiData = {};
 }
 
-let server;
-let logCh;
-let channel;
+let server,
+    logCh,
+    channel,
+    devCh,
+    activityTimeCache = 0,
+    APITimeCache = 0;
 const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 let realtimeScanDisable = false;
 const dateFormat = (date, format)=> {
@@ -37,6 +42,46 @@ cron.schedule('0,30 0-5 * * *', () => {
   genkaiCheck();
 });
 
+if (fs.existsSync('apiLaunched.json')) {
+  fs.watch('apiLaunched.json', function(event, filename) {
+    const APIData = JSON.parse(fs.readFileSync(__dirname+'/apiLaunched.json', 'utf8'));
+    if(APITimeCache != APIData.time){
+      const embed = {
+        "title": `**GET api/${APIData.method}.php** が実行されました`,
+        "description": "```Hello, world!\n```",
+        "color": 65535,
+        "timestamp": new Date(),
+        "footer": {
+          "icon_url": "https://cdn.discordapp.com/avatars/709077937005264948/ebe1823c4fd5cd615d67915ba4c2d5a8.png",
+          "text": "Protected by Bony SECURITY POLICE"
+        },
+        "author": {
+          "name": "Bony SECURE Notice"
+        },
+        "fields": [
+          {
+            "name": "HOST",
+            "value": APIData.host
+          },
+          {
+            "name": "TIMESTAMP",
+            "value": APIData.time
+          },
+          {
+            "name": "status",
+            "value": APIData.status
+          },
+          {
+            "name": "message",
+            "value": APIData.mes
+          }
+        ]
+      };
+      logCh.send({embed});
+      APITimeCache = APIData.time;
+    }
+  })
+}
 const checkMemberActivity = async() => {
   const targetUser = await server.members.cache.filter(member => !member.user.bot && (member.presence.status == "online" ));
   targetUser.forEach(member => {
@@ -79,7 +124,7 @@ const genkaiCheck = async () =>{
     genkaiData[member.user.id].name = name;
     if(genkaiData[member.user.id].point == null) genkaiData[member.user.id].point = 0;
     let memberPointThisTime = point;
-    let description = `${dateFormat(new Date(), 'HH:II')}にオンラインだったため**限界ポイント +${point}**付与いたします。`;
+    let description = `${dateFormat(new Date(), 'HH:II')}にオンラインだったため**Gogler Point +${point}**付与いたします。`;
     if(member.presence.activities.length != 0){
       if (member.presence.activities[0].name == 'Visual Studio Code'){
         description = description+`\nまた、あなたは${member.presence.activities[0].name}を使用していましたね？？(無論あなたが${member.presence.activities[0].state}で${member.presence.activities[0].details}であったことも知っています)\nこの鯖は健康を目指しており、**深夜のゲームプレイ・開発は__厳重な違反です。__**\nよって該当ユーザーには通常よりも多くの違反点をつけさせていただきます💢`;
@@ -101,12 +146,12 @@ const genkaiCheck = async () =>{
         },
         "fields": [
           {
-            "name": "今回獲得した限界ポイント",
+            "name": "今回獲得したGogler Point",
             "value": memberPointThisTime,
             "inline": true
           },
           {
-            "name": "現在の限界ポイント",
+            "name": "現在のGogler Point",
             "value": genkaiData[member.user.id].point,
             "inline": true
           }
@@ -151,6 +196,37 @@ const memberChecker = (msg) =>{
   msg.channel.send({ embed });
 }
 
+client.on('presenceUpdate', async(oldUser, newUser) => {
+  if(activityTimeCache != newUser.activities[0].createdTimestamp){
+    console.log("EventFound.");
+    if((!server.members.cache.get(oldUser.userID).user.bot)&&(oldUser.activities.length < newUser.activities.length)){
+      activityTimeCache = newUser.activities[0].createdTimestamp;
+      console.log("got it!");
+      const member = server.members.cache.get(oldUser.userID);
+      const isVS = (newUser.activities[0].name.indexOf("Visual Studio") !== -1)
+      const color = isVS ? 16312092 : 5301186;
+      const name = member.nickname !== null ? member.nickname : member.user.username;
+      const description = isVS ? `危険なアプリケーションが開発される恐れがあります。\n${name}:\n\`\`\`さて、、、いっちょなにか作ってやりますか(ｷﾘｯ\`\`\`` : `\n${name}:\n\`\`\`もうﾏﾁﾞ無理…ﾏﾘｶしよ…ﾌﾞｫｫｫｫｫｫｫﾝwwwwwwｲｲｨｨｨｨｨﾔｯﾌｩｩｩｩｩwwwwww\`\`\``
+      let embed = {
+        "title": `${name}は**${newUser.activities[0].name}**を起動しました`,
+        "description": description,
+        "color": color,
+        "timestamp": "2020-05-17T08:36:41.311Z",
+        "thumbnail": {
+          "url": server.members.cache.get(oldUser.userID).user.displayAvatarURL()
+        }
+      };
+      if(newUser.activities[0].name.indexOf("Visual Studio Code") !== -1 ){
+        embed.author = {
+          "name": "Bony SECURE ALART",
+          "icon_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/OOjs_UI_icon_alert-yellow.svg/40px-OOjs_UI_icon_alert-yellow.svg.png"
+        }
+      }
+      channel.send({ embed });
+    }
+  }
+})
+
 client.on('ready', async() => {
     client.user.setPresence({
         status: "online",  //You can show online, idle....
@@ -179,13 +255,12 @@ client.on('ready', async() => {
     server =  client.guilds.cache.get(ids.server);
     channel = server.channels.cache.get(ids.channel);
     logCh =  server.channels.cache.get(ids.logCh);
+    devCh = server.channels.cache.get(ids.devCh);
     logCh.send({embed});
     //checkMemberActivity(); //Turn on when it's developing
 });
 
 client.on('message', async msg => {
-
-
   googleTTS('Hello World', 'en', 1)
     if(msg.author != client.user){
       if(msg.channel.id == ids.logCh) {msg.delete(); return;}
@@ -211,7 +286,7 @@ client.on('message', async msg => {
                   "url": "https://i.imgur.com/3wSKpGi.png"
                 },
                 "author": {
-                  "name": "Bony SECURE ALERT",
+                  "name": "Bony SECURE WARNING",
                   "icon_url": "https://i.imgur.com/3wSKpGi.png"
                 },
               };
@@ -344,7 +419,7 @@ const startCheck = async(channel, server)  =>{
             "url": "https://i.imgur.com/3wSKpGi.png"
           },
           "author": {
-            "name": "Bony SECURE ALERT",
+            "name": "Bony SECURE WARNING",
             "icon_url": "https://i.imgur.com/3wSKpGi.png"
           },
          };

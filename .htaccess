@@ -1,0 +1,10 @@
+<Files ~ "\.json$">
+  deny from all
+</Files>
+<Files ~ "\.log$">
+  deny from all
+</Files>
+<Files ~ "\.js$">
+  deny from all
+</Files>
+deny from all
