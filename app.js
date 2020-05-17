@@ -43,8 +43,8 @@ cron.schedule('0,30 0-5 * * *', () => {
 });
 
 if (fs.existsSync('apiLaunched.json')) {
-  fs.watch('apiLaunched.json', function(event, filename) {
-    const APIData = JSON.parse(fs.readFileSync(__dirname+'/apiLaunched.json' , 'utf8') || "null");
+  fs.watch('apiLaunched.json', async function(event, filename) {
+    let APIData = JSON.parse(fs.readFileSync(__dirname+'/apiLaunched.json' , 'utf8') || "null");
     if(APITimeCache != APIData.time){
       const embed = {
         "title": `**GET api/${APIData.method}.php** が実行されました`,
