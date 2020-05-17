@@ -6,7 +6,7 @@ const ids = JSON.parse(fs.readFileSync(__dirname+'/settings.json', 'utf8'));
 let genkaiData;
 const googleTTS = require('google-tts-api');
 const saveGenkaiData = (data) => { fs.writeFile('genkaiData.json', JSON.stringify(data, null, '    '), (err)=>{if(err) console.log(`error!::${err}`)})};
-try {fs.statSync(__dirname+'/apiLaunched.json'); }catch(e){ data = {"time": 0}; fs.writeFile(__dirname+'/apiLaunched.json', JSON.stringify(data, null, '    '), (err)=>{if(err) console.log(`error!::${err}`)})};
+try {fs.statSync(__dirname+'/apiLaunched.json'); }catch(e){ data = {"time": 0}; fs.writeFile(__dirname+'/apiLaunched.json', JSON.stringify(data, null, '    '), (err)=>{if(err) console.log(`error!::${err}`)}); fs.chmodSync(__dirname+'/apiLaunched.json', 0755);};
 
 try{
   genkaiData = JSON.parse(fs.readFileSync(__dirname+'/genkaiData.json', 'utf8'));
