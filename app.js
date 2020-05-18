@@ -308,8 +308,6 @@ client.on('ready', async() => {
 });
 
 client.on('message', async msg => {
-  //console.log(JSON.stringify(msg));
-  //console.log(JSON.stringify(msg.author));
   if(msg.author.tag == 'GitHub#0000') checkRepo(msg);
   if(msg.author != client.user){
     if(msg.channel.id == ids.logCh) {msg.delete(); return;}
