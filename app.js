@@ -243,8 +243,8 @@ const checkRepo = (msg) =>{
       "inline": true
     }
   ]
-  embed = embedAlert(name, description, color, new Date(), user.displayAvatarURL(), fields);
-  msg.channel.send({embed})
+  embed = embedAlert(name, description, color, new Date(), user.displayAvatarURL(), fields)[0];
+  msg.channel.send({embed});
 }
 
 client.on('presenceUpdate', async(oldUser, newUser) => {
