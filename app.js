@@ -258,7 +258,7 @@ client.on('presenceUpdate', async(oldUser, newUser) => {
         "title": `${name}は**${newUser.activities[0].name}**を起動しました`,
         "description": description,
         "color": color,
-        "timestamp": "2020-05-17T08:36:41.311Z",
+        "timestamp": new Date(),
         "thumbnail": {
           "url": member.user.displayAvatarURL()
         }
