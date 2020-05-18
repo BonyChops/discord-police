@@ -206,7 +206,7 @@ const runGoglerPoint = async(id, point) =>{
   genkaiData[id].point += point;
 }
 
-const checkRepo = (msg) =>{
+const checkRepo = async(msg) =>{
   let embed = msg.embeds[0];
   if(embed.title.search(/new commit.??$/) === -1) {console.log("This isn't commit"); return;}
   if((gitName = embed.description.substr(embed.description.search(/\s[^\s]*$/)+1)) === -1) {console.log("Failed to get user name"); return;}
@@ -240,6 +240,7 @@ const checkRepo = (msg) =>{
   ]
   embed = embedAlert(name, description, color, new Date(), user.displayAvatarURL(), fields);
   msg.channel.send({embed});
+  await saveGenkaiData(genkaiData);
 }
 
 client.on('presenceUpdate', async(oldUser, newUser) => {
