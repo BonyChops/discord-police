@@ -207,16 +207,38 @@ const memberChecker = (msg) =>{
 }
 
 const checkRepo = (msg) =>{
+  const embed = msg.embeds[0];
+  if(embed.title.search(/new commit$/) === -1) {console.log("This isn't commit"); return;}
+  if((gitName = embed.description.substr(embed.description.search(/\s[^\s]*$/)+1)) === -1) {console.log("Failed to get user name"); return;}
+  const user = server.members.cache.get(ids.github[gitName]);
   if((dt.toFormat("HH24") >= 6)&&(dt.toFormat("HH24") <= 19)){
     point = -50
-    description = `健康な時間帯のコミットです！ Gogler Point ${point}`
+    name = "健康な時間帯のコミットです！";
+    description = `Gogler Point ${point}`;
+    color = 65280;
   }else if ((dt.toFormat("HH24") >= 0)&&(dt.toFormat("HH24") <= 5)){
-    point = 100
-    description = `**限界開発が検出されました** Gogler Point ${point}`
+    point = 100;
+    name = `**限界開発が検出されました**`;
+    description = `Gogler Point ${point}💢`;
+    color = 16312092;
   }else{
     return
   }
-  //runGoglerPoint(msg.author.id, )
+  runGoglerPoint(user.id, point);
+  fields = [
+    {
+      "name": "今回獲得したGogler Point",
+      "value": point,
+      "inline": true
+    },
+    {
+      "name": "現在のGogler Point",
+      "value": genkaiData[user.id].point,
+      "inline": true
+    }
+  ]
+  const embedToSend = embedAlert(name, description, color, new Date(), user.displayAvatarURL(), fields);
+  msg.channel.send({embedToSend})
 }
 
 client.on('presenceUpdate', async(oldUser, newUser) => {
@@ -236,7 +258,7 @@ client.on('presenceUpdate', async(oldUser, newUser) => {
         "color": color,
         "timestamp": "2020-05-17T08:36:41.311Z",
         "thumbnail": {
-          "url": server.members.cache.get(oldUser.userID).user.displayAvatarURL()
+          "url": member.user.displayAvatarURL()
         }
       };
       if(newUser.activities[0].name.indexOf("Visual Studio Code") !== -1 ){
@@ -285,7 +307,7 @@ client.on('ready', async() => {
 
 client.on('message', async msg => {
   console.log(JSON.stringify(msg));
-  //if(msg.author.id == 'GitHub#0000') checkRepo(msg);
+  if(msg.author.id == 'GitHub#0000') checkRepo(msg);
   if(msg.author != client.user){
     if(msg.channel.id == ids.logCh) {msg.delete(); return;}
     if(msg.channel.id == ids.terminalCh){
