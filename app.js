@@ -16,8 +16,7 @@ try{
 }
 
 const embedAlert = (name, description, color, time, userIcon, fields = []) =>{
-  return [
-    {
+  return {
       "title": name,
       "description": description,
       "color": color,
@@ -26,8 +25,7 @@ const embedAlert = (name, description, color, time, userIcon, fields = []) =>{
         "url": userIcon
       },
       "fields": fields
-    }
-  ];
+    };
 };
 let server,
     logCh,
@@ -243,7 +241,7 @@ const checkRepo = (msg) =>{
       "inline": true
     }
   ]
-  embed = embedAlert(name, description, color, new Date(), user.displayAvatarURL(), fields)[0];
+  embed = embedAlert(name, description, color, new Date(), user.displayAvatarURL(), fields);
   msg.channel.send({embed});
 }
 
