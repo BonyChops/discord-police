@@ -214,7 +214,7 @@ const checkRepo = (msg) =>{
   if((gitName = embed.description.substr(embed.description.search(/\s[^\s]*$/)+1)) === -1) {console.log("Failed to get user name"); return;}
   console.log("gitName: "+gitName);
   console.log("ids.github[gitName]: "+ids.github[gitName]);
-  const user = server.members.cache.find(member => member.user.tag == ids.github[gitName]);
+  const user = server.members.cache.find(member => member.user.tag == ids.github[gitName]).user;
   console.log(JSON.stringify(user));
   const dt = new Date();
   if((dt.toFormat("HH24") >= 6)&&(dt.toFormat("HH24") <= 19)){
