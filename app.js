@@ -209,7 +209,7 @@ const runGoglerPoint = async(id, point) =>{
 }
 
 const checkRepo = (msg) =>{
-  const embed = msg.embeds[0];
+  let embed = msg.embeds[0];
   if(embed.title.search(/new commit$/) === -1) {console.log("This isn't commit"); return;}
   if((gitName = embed.description.substr(embed.description.search(/\s[^\s]*$/)+1)) === -1) {console.log("Failed to get user name"); return;}
   console.log("gitName: "+gitName);
@@ -243,8 +243,8 @@ const checkRepo = (msg) =>{
       "inline": true
     }
   ]
-  const embedToSend = embedAlert(name, description, color, new Date(), user.displayAvatarURL(), fields);
-  msg.channel.send({embedToSend})
+  let embed = embedAlert(name, description, color, new Date(), user.displayAvatarURL(), fields);
+  msg.channel.send({embed})
 }
 
 client.on('presenceUpdate', async(oldUser, newUser) => {
