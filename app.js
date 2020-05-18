@@ -210,10 +210,7 @@ const checkRepo = (msg) =>{
   let embed = msg.embeds[0];
   if(embed.title.search(/new commit.??$/) === -1) {console.log("This isn't commit"); return;}
   if((gitName = embed.description.substr(embed.description.search(/\s[^\s]*$/)+1)) === -1) {console.log("Failed to get user name"); return;}
-  console.log("gitName: "+gitName);
-  console.log("ids.github[gitName]: "+ids.github[gitName]);
   const user = server.members.cache.find(member => member.user.tag == ids.github[gitName]).user;
-  console.log(JSON.stringify(user));
   const dt = new Date();
   if((dt.toFormat("HH24") >= 6)&&(dt.toFormat("HH24") <= 19)){
     point = -50
@@ -310,8 +307,8 @@ client.on('ready', async() => {
 });
 
 client.on('message', async msg => {
-  console.log(JSON.stringify(msg));
-  console.log(JSON.stringify(msg.author));
+  //console.log(JSON.stringify(msg));
+  //console.log(JSON.stringify(msg.author));
   if(msg.author.tag == 'GitHub#0000') checkRepo(msg);
   if(msg.author != client.user){
     if(msg.channel.id == ids.logCh) {msg.delete(); return;}
