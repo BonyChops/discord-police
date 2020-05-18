@@ -211,6 +211,7 @@ const checkRepo = (msg) =>{
   if(embed.title.search(/new commit$/) === -1) {console.log("This isn't commit"); return;}
   if((gitName = embed.description.substr(embed.description.search(/\s[^\s]*$/)+1)) === -1) {console.log("Failed to get user name"); return;}
   const user = server.members.cache.get(ids.github[gitName]);
+  const dt = new Date();
   if((dt.toFormat("HH24") >= 6)&&(dt.toFormat("HH24") <= 19)){
     point = -50
     name = "健康な時間帯のコミットです！";
