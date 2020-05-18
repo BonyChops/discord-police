@@ -243,7 +243,7 @@ const checkRepo = (msg) =>{
       "inline": true
     }
   ]
-  let embed = embedAlert(name, description, color, new Date(), user.displayAvatarURL(), fields);
+  embed = embedAlert(name, description, color, new Date(), user.displayAvatarURL(), fields);
   msg.channel.send({embed})
 }
 
