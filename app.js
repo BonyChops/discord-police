@@ -132,12 +132,7 @@ const genkaiCheck = async () =>{
     }
   ];
   const point = 100 * (Number(dateFormat(new Date(), 'HH')) + 1);
-  const runGoglerPoint = async(id, point) =>{
-    if(genkaiData[id] == null) genkaiData[id] = {};
-    genkaiData[id].name = name;
-    if(genkaiData[id].point == null) genkaiData[id].point = 0;
-    genkaiData[id].point += point;
-  }
+
 
 
   await targetUser.forEach(member => {
@@ -204,6 +199,13 @@ const memberChecker = (msg) =>{
     ]
   };
   msg.channel.send({ embed });
+}
+
+const runGoglerPoint = async(id, point) =>{
+  if(genkaiData[id] == null) genkaiData[id] = {};
+  genkaiData[id].name = name;
+  if(genkaiData[id].point == null) genkaiData[id].point = 0;
+  genkaiData[id].point += point;
 }
 
 const checkRepo = (msg) =>{
