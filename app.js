@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const client = new Discord.Client({disableEveryone: false});
+require('date-utils');
 const fs = require('fs');
 const accessToken = JSON.parse(fs.readFileSync(__dirname+'/accessToken.json', 'utf8')).token;
 const ids = JSON.parse(fs.readFileSync(__dirname+'/settings.json', 'utf8'));
@@ -14,6 +15,20 @@ try{
   genkaiData = {};
 }
 
+const embedAlert = (name, description, color, time, userIcon, fields = []) =>{
+  return [
+    {
+      "title": name,
+      "description": description,
+      "color": color,
+      "timestamp": time,
+      "thumbnail": {
+        "url": userIcon
+      },
+      "fields": fields
+    }
+  ];
+};
 let server,
     logCh,
     channel,
@@ -117,12 +132,18 @@ const genkaiCheck = async () =>{
     }
   ];
   const point = 100 * (Number(dateFormat(new Date(), 'HH')) + 1);
+  const runGoglerPoint = async(id, point) =>{
+    if(genkaiData[id] == null) genkaiData[id] = {};
+    genkaiData[id].name = name;
+    if(genkaiData[id].point == null) genkaiData[id].point = 0;
+    genkaiData[id].point += point;
+  }
+
+
   await targetUser.forEach(member => {
     let name = member.nickname !== null ? member.nickname : member.user.username;
     let userIcon = member.user.displayAvatarURL();
-    if(genkaiData[member.user.id] == null)genkaiData[member.user.id] = {};
-    genkaiData[member.user.id].name = name;
-    if(genkaiData[member.user.id].point == null) genkaiData[member.user.id].point = 0;
+
     let memberPointThisTime = point;
     let description = `${dateFormat(new Date(), 'HH:II')}にオンラインだったため**Gogler Point +${point}**付与いたします。`;
     if(member.presence.activities.length != 0){
@@ -133,34 +154,23 @@ const genkaiCheck = async () =>{
       }
       memberPointThisTime *= 1.5;
     }
-    genkaiData[member.user.id].point += memberPointThisTime;
-
-    embeds.push(
+    runGoglerPoint(member.user.id, memberPointThisTime);
+    fields = [
       {
-        "title": name,
-        "description": description,
-        "color": 12390624,
-        "timestamp": new Date(),
-        "thumbnail": {
-          "url": userIcon
-        },
-        "fields": [
-          {
-            "name": "今回獲得したGogler Point",
-            "value": memberPointThisTime,
-            "inline": true
-          },
-          {
-            "name": "現在のGogler Point",
-            "value": genkaiData[member.user.id].point,
-            "inline": true
-          }
-        ]
-      })
+        "name": "今回獲得したGogler Point",
+        "value": memberPointThisTime,
+        "inline": true
+      },
+      {
+        "name": "現在のGogler Point",
+        "value": genkaiData[member.user.id].point,
+        "inline": true
+      }
+    ]
+    embeds.push(embedAlert(name, description, 12390624, new Date(), userIcon,fields))
     });
   await saveGenkaiData(genkaiData);
   await embeds.forEach(embed => {
-    //console.dir(embed);
     channel.send({embed})});
 }
 
@@ -194,6 +204,19 @@ const memberChecker = (msg) =>{
     ]
   };
   msg.channel.send({ embed });
+}
+
+const checkRepo = (msg) =>{
+  if((dt.toFormat("HH24") >= 6)&&(dt.toFormat("HH24") <= 19)){
+    point = -50
+    description = `健康な時間帯のコミットです！ Gogler Point ${point}`
+  }else if ((dt.toFormat("HH24") >= 0)&&(dt.toFormat("HH24") <= 5)){
+    point = 100
+    description = `**限界開発が検出されました** Gogler Point ${point}`
+  }else{
+    return
+  }
+  //runGoglerPoint(msg.author.id, )
 }
 
 client.on('presenceUpdate', async(oldUser, newUser) => {
@@ -252,7 +275,7 @@ client.on('ready', async() => {
         "name": "Bony SECURE Notice"
       }
     };
-    server =  client.guilds.cache.get(ids.server);
+    server = client.guilds.cache.get(ids.server);
     channel = server.channels.cache.get(ids.channel);
     logCh =  server.channels.cache.get(ids.logCh);
     devCh = server.channels.cache.get(ids.devCh);
@@ -261,7 +284,8 @@ client.on('ready', async() => {
 });
 
 client.on('message', async msg => {
-  console.log(JSON.stringify(msg.author));
+  console.log(JSON.stringify(msg));
+  //if(msg.author.id == 'GitHub#0000') checkRepo(msg);
   if(msg.author != client.user){
     if(msg.channel.id == ids.logCh) {msg.delete(); return;}
     if(msg.channel.id == ids.terminalCh){
@@ -459,4 +483,5 @@ const startCheck = async(channel, server)  =>{
     anl.cnt = await 0;
 
     //channel.send('done');
+
 }
