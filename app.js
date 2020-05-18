@@ -504,7 +504,4 @@ const startCheck = async(channel, server)  =>{
     }
     anl.on = await false;
     anl.cnt = await 0;
-
-    //channel.send('done');
-
 }
