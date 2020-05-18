@@ -212,7 +212,10 @@ const checkRepo = (msg) =>{
   const embed = msg.embeds[0];
   if(embed.title.search(/new commit$/) === -1) {console.log("This isn't commit"); return;}
   if((gitName = embed.description.substr(embed.description.search(/\s[^\s]*$/)+1)) === -1) {console.log("Failed to get user name"); return;}
+  console.log("gitName: "+gitName);
+  console.log("ids.github[gitName]: "+ids.github[gitName]);
   const user = server.members.cache.get(ids.github[gitName]);
+  console.log(JSON.stringify(user));
   const dt = new Date();
   if((dt.toFormat("HH24") >= 6)&&(dt.toFormat("HH24") <= 19)){
     point = -50
