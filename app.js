@@ -139,7 +139,7 @@ const genkaiCheck = async () =>{
 
     let memberPointThisTime = point;
     let description = `${dateFormat(new Date(), 'HH:II')}にオンラインだったため**Gogler Point +${point}**付与いたします。`;
-    if((member.presence.activities.length > 1)&& !((member.presence.activities.length == 1)&&(member.presence.activities[0].name != "Custom Status"))){
+    if((member.presence.activities.length > 1)||((member.presence.activities.length == 1)&&(member.presence.activities[0].name != "Custom Status"))){
       if (member.presence.activities[0].name == 'Visual Studio Code'){
         description = description+`\nまた、あなたは${member.presence.activities[0].name}を使用していましたね？？(無論あなたが${member.presence.activities[0].state}で${member.presence.activities[0].details}であったことも知っています)\nこの鯖は健康を目指しており、**深夜のゲームプレイ・開発は__厳重な違反です。__**\nよって該当ユーザーには通常よりも多くの違反点をつけさせていただきます💢`;
       }else{
