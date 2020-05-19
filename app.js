@@ -147,7 +147,7 @@ const genkaiCheck = async () =>{
       }
       memberPointThisTime *= 1.5;
     }
-    runGoglerPoint(member.user.id, memberPointThisTime);
+    runGoglerPoint(member.user.id, memberPointThisTime, name);
     fields = [
       {
         "name": "今回獲得したGogler Point",
@@ -199,7 +199,7 @@ const memberChecker = (msg) =>{
   msg.channel.send({ embed });
 }
 
-const runGoglerPoint = async(id, point) =>{
+const runGoglerPoint = async(id, point, name) =>{
   if(genkaiData[id] == null) genkaiData[id] = {};
   genkaiData[id].name = name;
   if(genkaiData[id].point == null) genkaiData[id].point = 0;
@@ -210,22 +210,24 @@ const checkRepo = async(msg) =>{
   let embed = msg.embeds[0];
   if(embed.title.search(/new commit.??$/) === -1) {console.log("This isn't commit"); return;}
   if((gitName = embed.description.substr(embed.description.search(/\s[^\s]*$/)+1)) === -1) {console.log("Failed to get user name"); return;}
-  const user = server.members.cache.find(member => member.user.tag == ids.github[gitName]).user;
+  const member = server.members.cache.find(member => member.user.tag == ids.github[gitName]);
+  const user = member.user
+  let name = member.nickname !== null ? member.nickname : user.username;
   const dt = new Date();
   if((dt.toFormat("HH24") >= 6)&&(dt.toFormat("HH24") <= 19)){
     point = -50
-    name = "健康な時間帯のコミットです！";
-    description = `Gogler Point ${point}`;
-    color = 65280;
+    const title = "健康な時間帯のコミットです！";
+    const description = `Gogler Point ${point}`;
+    const color = 65280;
   }else if ((dt.toFormat("HH24") >= 0)&&(dt.toFormat("HH24") <= 5)){
     point = 100;
-    name = `**限界開発が検出されました**`;
-    description = `Gogler Point ${point}💢`;
-    color = 16312092;
+    const title = `**限界開発が検出されました**`;
+    const description = `Gogler Point ${point}💢`;
+    const color = 16312092;
   }else{
     return
   }
-  runGoglerPoint(user.id, point);
+  runGoglerPoint(user.id, point, name);
   fields = [
     {
       "name": "今回獲得したGogler Point",
@@ -238,7 +240,7 @@ const checkRepo = async(msg) =>{
       "inline": true
     }
   ]
-  embed = embedAlert(name, description, color, new Date(), user.displayAvatarURL(), fields);
+  embed = embedAlert(title, description, color, new Date(), user.displayAvatarURL(), fields);
   msg.channel.send({embed});
   await saveGenkaiData(genkaiData);
 }
