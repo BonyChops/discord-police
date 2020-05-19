@@ -1,10 +1,6 @@
-<Files ~ "\.json$">
+<Files ~ ".(json|log|js)$">
   deny from all
 </Files>
-<Files ~ "\.log$">
+<Files ~ "(node_modules)/">
   deny from all
 </Files>
-<Files ~ "\.js$">
-  deny from all
-</Files>
-deny from all

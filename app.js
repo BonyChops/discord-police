@@ -214,16 +214,17 @@ const checkRepo = async(msg) =>{
   const user = member.user
   let name = member.nickname !== null ? member.nickname : user.username;
   const dt = new Date();
+  let title,description,color;
   if((dt.toFormat("HH24") >= 6)&&(dt.toFormat("HH24") <= 19)){
     point = -50
-    const title = "健康な時間帯のコミットです！";
-    const description = `Gogler Point ${point}`;
-    const color = 65280;
+    let title = await "健康な時間帯のコミットです！";
+    let description = await `Gogler Point ${point}`;
+    let color = await 65280;
   }else if ((dt.toFormat("HH24") >= 0)&&(dt.toFormat("HH24") <= 5)){
     point = 100;
-    const title = `**限界開発が検出されました**`;
-    const description = `Gogler Point ${point}💢`;
-    const color = 16312092;
+    let title = await `**限界開発が検出されました**`;
+    let description = await `Gogler Point ${point}💢`;
+    let color = await 16312092;
   }else{
     return
   }
