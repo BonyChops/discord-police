@@ -217,14 +217,14 @@ const checkRepo = async(msg) =>{
   let title,description,color;
   if((dt.toFormat("HH24") >= 6)&&(dt.toFormat("HH24") <= 19)){
     point = -50
-    let title = await "健康な時間帯のコミットです！";
-    let description = await `Gogler Point ${point}`;
-    let color = await 65280;
+    title = await "健康な時間帯のコミットです！";
+    description = await `Gogler Point ${point}`;
+    color = await 65280;
   }else if ((dt.toFormat("HH24") >= 0)&&(dt.toFormat("HH24") <= 5)){
     point = 100;
-    let title = await `**限界開発が検出されました**`;
-    let description = await `Gogler Point ${point}💢`;
-    let color = await 16312092;
+    title = await `**限界開発が検出されました**`;
+    description = await `Gogler Point ${point}💢`;
+    color = await 16312092;
   }else{
     return
   }
@@ -241,7 +241,7 @@ const checkRepo = async(msg) =>{
       "inline": true
     }
   ]
-  embed = embedAlert(title, description, color, new Date(), user.displayAvatarURL(), fields);
+  embed = await embedAlert(title, description, color, new Date(), user.displayAvatarURL(), fields);
   msg.channel.send({embed});
   await saveGenkaiData(genkaiData);
 }
