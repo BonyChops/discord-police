@@ -251,6 +251,7 @@ client.on('presenceUpdate', async(oldUser, newUser) => {
       console.log("got it!");
       const member = server.members.cache.get(oldUser.userID);
       const isVS = (newUser.activities[0].name.indexOf("Visual Studio") !== -1)
+      if (!isVS) return;
       const color = isVS ? 16312092 : 5301186;
       const name = member.nickname !== null ? member.nickname : member.user.username;
       const description = isVS ? `危険なアプリケーションが開発される恐れがあります。\n${name}:\n\`\`\`さて、、、いっちょなにか作ってやりますか(ｷﾘｯ\`\`\`` : `\n${name}:\n\`\`\`もうﾏﾁﾞ無理…ﾏﾘｶしよ…ﾌﾞｫｫｫｫｫｫｫﾝwwwwwwｲｲｨｨｨｨｨﾔｯﾌｩｩｩｩｩwwwwww\`\`\``
