@@ -215,7 +215,7 @@ const checkRepo = async(msg) =>{
   let name = member.nickname !== null ? member.nickname : user.username;
   const dt = new Date();
   let title,description,color;
-  if((dt.toFormat("HH24") >= 6)&&(dt.toFormat("HH24") <= 19)){
+  if((dt.toFormat("HH24") >= 6)&&(dt.toFormat("HH24") <= 23)){
     point = -500;
     title = await "健康な時間帯のコミットです！";
     description = await `Gogler Point ${point}`;
