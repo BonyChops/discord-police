@@ -216,7 +216,7 @@ const checkRepo = async(msg) =>{
   const dt = new Date();
   let title,description,color;
   if((dt.toFormat("HH24") >= 6)&&(dt.toFormat("HH24") <= 19)){
-    point = -50
+    point = -500;
     title = await "健康な時間帯のコミットです！";
     description = await `Gogler Point ${point}`;
     color = await 65280;
