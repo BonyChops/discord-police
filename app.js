@@ -363,6 +363,7 @@ client.on('message', async msg => {
       }
       if(msg.content.indexOf("!sushi") !== -1) sushi(msg);
       if(msg.content.indexOf("!member") !== -1) memberChecker(msg);
+      if(msg.content == "/flash") msg.channel.send("フラーーーーッシュ！！！\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nｱｪ");
       if((msg.content.search(/ふ{2,}\.{2,}$/) !== -1)||(msg.content.search(/(ふっ){2,}/) !== -1)) {
         embed = embedAlert("危険思考はおやめください","鯖の治安悪化に繋がりかねません。",16312092,new Date(), "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/OOjs_UI_icon_alert-yellow.svg/40px-OOjs_UI_icon_alert-yellow.svg.png");
         msg.channel.send({embed});
