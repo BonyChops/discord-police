@@ -40,6 +40,7 @@ function launch(){
         "data" => $data
     ];
     print(json_encode($json_data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
+    file_put_contents(__DIR__.'/../apiLog.json', json_encode($json_data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
     if($status == "success"){
         $json_data = [
             "method" => "todoist",
