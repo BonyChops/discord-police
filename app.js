@@ -119,7 +119,7 @@ if (fs.existsSync('apiLaunched.json')) {
           return;
         }
         const name = member.nickname !== null ? member.nickname : member.user.username;
-        const todoDate = new Date.parse(APIData.todoData.time);
+        const todoDate = new Date(Date.parse(APIData.todoData.time));
         console.log(APIData.todoData.time);
         console.log(todoDate);
         const title = "Todoist タスク完了！";
