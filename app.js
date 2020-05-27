@@ -144,7 +144,7 @@ if (fs.existsSync('apiLaunched.json')) {
             "inline": true
           }
         ]
-        embed = await embedAlert(title, description, 65280, new Date(), user.displayAvatarURL(), fields);
+        embed = await embedAlert(title, description, 65280, new Date(), member.user.displayAvatarURL(), fields);
         channel.send({embed});
       }
     }
