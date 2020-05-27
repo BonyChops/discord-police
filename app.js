@@ -31,6 +31,7 @@ let server,
     logCh,
     channel,
     devCh,
+    actCh,
     activityTimeCache = 0,
     APITimeCache = 0;
 const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
@@ -119,7 +120,7 @@ if (fs.existsSync('apiLaunched.json')) {
           return;
         }
         const name = member.nickname !== null ? member.nickname : member.user.username;
-        const todoDate = new Date(Date.parse(APIData.todoData.time));
+        const todoDate = new Date(APIData.todoData.time);
         console.log(APIData.todoData.time);
         console.log(todoDate);
         const title = "Todoist タスク完了！";
@@ -145,7 +146,7 @@ if (fs.existsSync('apiLaunched.json')) {
           }
         ]
         embed = await embedAlert(title, description, 65280, new Date(), member.user.displayAvatarURL(), fields);
-        channel.send({embed});
+        actCh.send({embed});
       }
     }
   })
@@ -362,6 +363,7 @@ client.on('ready', async() => {
     channel = server.channels.cache.get(ids.channel);
     logCh =  server.channels.cache.get(ids.logCh);
     devCh = server.channels.cache.get(ids.devCh);
+    actCh = server.channels.cache.get(ids.actCh);
     logCh.send({embed});
     //checkMemberActivity(); //Turn on when it's developing
 });
