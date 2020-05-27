@@ -18,7 +18,7 @@ $todoData = json_decode($rawData, true);
 
 $requires = ["name", "link", "time"];
 foreach($requires as $param){
-    if(array_search($param, $todoData) === false){
+    if(!isset($todoData[$param])){
         $status = "error";
         $mes = 'Data params not enough. (Required '.implode(", ", $requires).')';
         launch();
