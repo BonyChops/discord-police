@@ -114,12 +114,14 @@ if (fs.existsSync('apiLaunched.json')) {
               "value": APIData.mes
             }
           ];
-          const embed = embedAlert("APIエラー: **GET api/${APIData.method}.php**", `\`\`\`該当するUserTag: ${APIData.userTag}はこの鯖に見つかりませんでした。\`\`\``,16711680, APIData.todoData.time,null, fields);
+          const embed = embedAlert(`APIエラー: **POST api/${APIData.method}.php**`, `\`\`\`該当するUserTag: ${APIData.userTag}はこの鯖に見つかりませんでした。\`\`\``,16711680, APIData.todoData.time,null, fields);
           logCh.send({embed});
           return;
         }
         const name = member.nickname !== null ? member.nickname : member.user.username;
         const todoDate = new Date.parse(APIData.todoData.time);
+        console.log(APIData.todoData.time);
+        console.log(todoDate);
         const title = "Todoist タスク完了！";
         let description,point
         if(todoDate.toFormat("HH24")>= 6&&(todoDate.toFormat("HH24")<= 23)){
