@@ -96,7 +96,25 @@ if (fs.existsSync('apiLaunched.json')) {
       }else{
         const member = server.members.cache.find(member => member.user.tag == APIData.userTag);
         if(member === undefined){
-          const embed = embedAlert("APIエラー", `該当するUserTag${APIData.userTag}はこの鯖に見つかりませんでした。`,16711680, APIData.todoData.time);
+        const fields= [
+            {
+              "name": "HOST",
+              "value": APIData.host
+            },
+            {
+              "name": "TIMESTAMP",
+              "value": APIData.time
+            },
+            {
+              "name": "status",
+              "value": APIData.status
+            },
+            {
+              "name": "message",
+              "value": APIData.mes
+            }
+          ];
+          const embed = embedAlert("APIエラー: **GET api/${APIData.method}.php**", `\`\`\`該当するUserTag: ${APIData.userTag}はこの鯖に見つかりませんでした。\`\`\``,16711680, APIData.todoData.time,null, fields);
           logCh.send({embed});
           return;
         }
