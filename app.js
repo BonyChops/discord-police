@@ -140,7 +140,7 @@ if (fs.existsSync('apiLaunched.json')) {
           },
           {
             "name": "現在のGogler Point",
-            "value": genkaiData[user.id].point,
+            "value": genkaiData[member.user.id].point,
             "inline": true
           }
         ]
