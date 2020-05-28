@@ -280,6 +280,7 @@ const runGoglerPoint = async(id, point, name) =>{
   if(genkaiData[id] == null) genkaiData[id] = {};
   genkaiData[id].name = name;
   if(genkaiData[id].point == null) genkaiData[id].point = 0;
+  if((genkaiData[id].point < 0)&&(point >= 0)) genkaiData[id].point = 0;
   genkaiData[id].point += point;
   await saveGenkaiData(genkaiData);
 }
