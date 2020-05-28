@@ -240,7 +240,6 @@ const genkaiCheck = async () =>{
     ]
     embeds.push(embedAlert(name, description, 12390624, new Date(), userIcon,fields))
     });
-  await saveGenkaiData(genkaiData);
   await embeds.forEach(embed => {
     channel.send({embed})});
 }
@@ -282,6 +281,7 @@ const runGoglerPoint = async(id, point, name) =>{
   genkaiData[id].name = name;
   if(genkaiData[id].point == null) genkaiData[id].point = 0;
   genkaiData[id].point += point;
+  await saveGenkaiData(genkaiData);
 }
 
 const checkRepo = async(msg) =>{
