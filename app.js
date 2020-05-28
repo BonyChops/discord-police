@@ -325,11 +325,28 @@ const checkRepo = async(msg) =>{
   await saveGenkaiData(genkaiData);
 }
 
+
+
 client.on('presenceUpdate', async(oldUser, newUser) => {
-  if(activityTimeCache != newUser.activities[0].createdTimestamp){
+  if(newUser.guild !== server) return;
+  const cacheData = await {"status": newUser.status, "id": newUser.userID};
+  if(await activityTimeCache !== await cacheData){
+    activityTimeCache = cacheData;
     console.log("EventFound.");
+    if((newUser.user.bot)&&(oldUser.status !== newUser.status)){
+      const member = newUser.member;
+      const botStatus = newUser.status;
+      console.dir(botStatus);
+      if(botStatus == "online"){
+        const embed = embedAlert(`${member.user.username} がオンラインになりました`, "長期アップデートにより、より危険な仕様に変更されている可能性があります", 16711680, new Date(), member.user.displayAvatarURL());
+        channel.send({embed});
+      }
+      if(botStatus == "offline"){
+        const embed = embedAlert(`${member.user.username} がオフラインになりました`, "長期アップデートにより、危険な仕様が追加される可能性があります。", 16312092, new Date(), "https://i.imgur.com/LQiUEtF.png");
+        channel.send({embed});
+      }
+    }
     if((!server.members.cache.get(oldUser.userID).user.bot)&&(oldUser.activities.length < newUser.activities.length)&&(newUser.activities[0].name != "Custom Status")){
-      activityTimeCache = newUser.activities[0].createdTimestamp;
       console.log("got it!");
       const member = server.members.cache.get(oldUser.userID);
       const isVS = (newUser.activities[0].name.indexOf("Visual Studio") !== -1)
