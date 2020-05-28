@@ -475,7 +475,7 @@ client.on('message', async msg => {
         anl.cnt = 100;
         msg.channel.send("強制的にブロック処理を行います。※試験的機能としてお使いください。");
       }
-      let isNeedChange = false;
+/*       let isNeedChange = false;
       let content = msg.content;
       const NGWords = JSON.parse(fs.readFileSync(__dirname+"/NGWords.json"));
       for(let word of Object.keys(NGWords)){
@@ -488,7 +488,7 @@ client.on('message', async msg => {
       if(isNeedChange){
         await msg.delete();
         await msg.reply(content);
-      }
+      } */
       if(anl.on){
           anl.cnt++;
       }else{
