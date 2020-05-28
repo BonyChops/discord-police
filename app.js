@@ -143,14 +143,15 @@ if (fs.existsSync('apiLaunched.json')) {
         const name = member.nickname !== null ? member.nickname : member.user.username;
         const todoDate = IFToDate(APIData.todoData.time);
         console.log(APIData.todoData.time);
-        console.log(todoDate);
-        const title = "Todoist タスク完了！";
+        const title = `「${APIData.todoData.name}」達成！`;
         let description,point
         if((todoDate.toFormat("HH24")>= 6)&&(todoDate.toFormat("HH24")<= 23)){
-          description = `${name}さん、「${APIData.todoData.name}」達成お疲れ様！`;
+          console.log("健康！");
+          description = `${name}さん、お疲れ様！`;
           point = -1000;
         }else{
-          description = `${name}さん、「${APIData.todoData.name}」達成お疲れ様！ただ、次からはもう少し早い時間帯でやりましょうね...\nHint: 健康時間帯でタスクを終わらせるともっとGogler Pointを減らせるよ！`;
+          console.log("限界...");
+          description = `${name}さん、お疲れ様！ただ、次からはもう少し早い時間帯でやりましょうね...\nHint: 健康時間帯でタスクを終わらせるともっとGogler Pointを減らせるよ！`;
           point = -500;
         }
         runGoglerPoint(member.user.id, point, name);
