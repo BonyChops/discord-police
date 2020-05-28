@@ -8,6 +8,11 @@ let genkaiData;
 const googleTTS = require('google-tts-api');
 const saveGenkaiData = (data) => { fs.writeFile('genkaiData.json', JSON.stringify(data, null, '    '), (err)=>{if(err) console.log(`error!::${err}`)})};
 try {fs.statSync(__dirname+'/apiLaunched.json'); }catch (e){ data = {"time": 0}; fs.writeFile(__dirname+'/apiLaunched.json', JSON.stringify(data, null, '    '), (err)=>{if(err) console.log(`error!::${err}`)}).then(fs.chmod(__dirname+'/apiLaunched.json', 0o600));};
+const replaceAll = (str, beforeStr, afterStr) => {
+  var reg = new RegExp(beforeStr, "gi");
+  return str.replace(reg, afterStr);
+}
+
 
 try{
   genkaiData = JSON.parse(fs.readFileSync(__dirname+'/genkaiData.json', 'utf8'));
@@ -470,13 +475,17 @@ client.on('message', async msg => {
         anl.cnt = 100;
         msg.channel.send("強制的にブロック処理を行います。※試験的機能としてお使いください。");
       }
-      if((msg.content.toLocaleLowerCase().indexOf("github") !== -1)||(msg.content.toLocaleLowerCase().indexOf("非公式") !== -1)){
+      let isNeedChange = false;
+      let content = msg.content;
+      const NGWords = {"github": "||Pornhub||", "非公式": "公式", "動作が安定しない": "とても動作が安定する", "OTTO": "||OPPAI||", "泣": "抜", "死ぬ": "||イク||", "死ん": "||イッ||", "あほしね": "あほしね(朝昇竜)", "ｱ": "ｱｰｲｷｿ", "Gogler": "||悪の組織||", "置換": "痴漢"};
+      await Object.keys(NGWords).forEach(async(word) => {
+        if(content.toLocaleLowerCase().indexOf(word) !== -1){
+          isNeedChange = true
+          content = await replaceAll(content, word,NGWords[word]);
+        }
+      })
+      if(isNeedChange){
         msg.delete();
-        msg.channel.send("```一部不適切な表現があったため、修正されます。```");
-        let content = msg.content
-        content = content.replace(/github/i,"||Pornhub||")
-        content = content.replace(/非公式/i,"公式");
-        content = content.replace(/動作が安定しない/i,"とても動作が安定する");
         msg.reply(content);
       }
       if(anl.on){
