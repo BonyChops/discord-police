@@ -477,29 +477,7 @@ client.on('message', async msg => {
       }
       let isNeedChange = false;
       let content = msg.content;
-      const NGWords = {
-        "github": "||Pornhub||",
-        "非公式": "公式",
-        "動作が安定しない": "とても動作が安定する",
-        "otto": "||OPPAI||",
-        "泣": "抜",
-        "死ぬ": "||イク||",
-        "死ん": "||イッ||",
-        "死に": "||イキ||",
-        "あほしね": "あほしね(朝昇竜)",
-        "ｱ": "ｱｰｲｷｿ",
-        "gogler": "||悪の組織||",
-        "置換": "痴漢",
-        "うーん": "うーんこ",
-        "mate": "お待ちくり〜〜w",
-        "まて": "お待ちくり〜〜w",
-        "待て": "お待ちくり〜〜w",
-        "w": 'w'.repeat(100),
-        "フラッシュ": "/flash",
-        "？": "！！！！？？？！？！？？！？？！？！？",
-        "?": "！！！！？？？！？！？？！？？！？！？",
-        "言論統制": "表現の自由"
-      };
+      const NGWords = JSON.parse(fs.readFileSync(__dirname+"/NGWords.json"));
       for(let word of Object.keys(NGWords)){
         if(content.toLocaleLowerCase().indexOf(word) !== -1){
           isNeedChange = true
