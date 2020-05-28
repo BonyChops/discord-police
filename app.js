@@ -470,10 +470,14 @@ client.on('message', async msg => {
         anl.cnt = 100;
         msg.channel.send("強制的にブロック処理を行います。※試験的機能としてお使いください。");
       }
-      if(msg.content.toLocaleLowerCase().indexOf("github") !== -1){
+      if((msg.content.toLocaleLowerCase().indexOf("github") !== -1)||(msg.content.toLocaleLowerCase().indexOf("非公式") !== -1)){
         msg.delete();
         msg.channel.send("```一部不適切な表現があったため、修正されます。```");
-        msg.reply(msg.content.replace(/github/i,"||Pornhub||"));
+        let content = msg.content
+        content = content.replace(/github/i,"||Pornhub||")
+        content = content.replace(/非公式/i,"公式");
+        content = content.replace(/動作が安定しない/i,"とても動作が安定する");
+        msg.reply(content);
       }
       if(anl.on){
           anl.cnt++;
