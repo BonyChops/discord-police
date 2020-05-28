@@ -412,6 +412,7 @@ client.on('ready', async() => {
 });
 
 client.on('message', async msg => {
+  if(msg.content.indexOf("/flash") !== -1) msg.channel.send("フラーーーーッシュ！！！\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n＼ｱｪ／");
   if(msg.author.tag == 'GitHub#0000') checkRepo(msg);
   if(msg.author != client.user){
     if(msg.channel.id == ids.logCh) {msg.delete(); return;}
@@ -463,7 +464,6 @@ client.on('message', async msg => {
       }
       if(msg.content.indexOf("!sushi") !== -1) sushi(msg);
       if(msg.content.indexOf("!member") !== -1) memberChecker(msg);
-      if(msg.content == "/flash") msg.channel.send("フラーーーーッシュ！！！\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nｱｪ");
       if((msg.content.search(/ふ{2,}\.{2,}$/) !== -1)||(msg.content.search(/(ふっ){2,}/) !== -1)) {
         embed = embedAlert("危険思考はおやめください","鯖の治安悪化に繋がりかねません。",16312092,new Date(), "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/OOjs_UI_icon_alert-yellow.svg/40px-OOjs_UI_icon_alert-yellow.svg.png");
         msg.channel.send({embed});
@@ -477,16 +477,39 @@ client.on('message', async msg => {
       }
       let isNeedChange = false;
       let content = msg.content;
-      const NGWords = {"github": "||Pornhub||", "非公式": "公式", "動作が安定しない": "とても動作が安定する", "OTTO": "||OPPAI||", "泣": "抜", "死ぬ": "||イク||", "死ん": "||イッ||", "あほしね": "あほしね(朝昇竜)", "ｱ": "ｱｰｲｷｿ", "Gogler": "||悪の組織||", "置換": "痴漢"};
-      await Object.keys(NGWords).forEach(async(word) => {
+      const NGWords = {
+        "github": "||Pornhub||",
+        "非公式": "公式",
+        "動作が安定しない": "とても動作が安定する",
+        "otto": "||OPPAI||",
+        "泣": "抜",
+        "死ぬ": "||イク||",
+        "死ん": "||イッ||",
+        "死に": "||イキ||",
+        "あほしね": "あほしね(朝昇竜)",
+        "ｱ": "ｱｰｲｷｿ",
+        "gogler": "||悪の組織||",
+        "置換": "痴漢",
+        "うーん": "うーんこ",
+        "mate": "お待ちくり〜〜w",
+        "まて": "お待ちくり〜〜w",
+        "待て": "お待ちくり〜〜w",
+        "w": 'w'.repeat(100),
+        "フラッシュ": "/flash",
+        "？": "！！！！？？？！？！？？！？？！？！？",
+        "?": "！！！！？？？！？！？？！？？！？！？",
+        "言論統制": "表現の自由"
+      };
+      for(let word of Object.keys(NGWords)){
         if(content.toLocaleLowerCase().indexOf(word) !== -1){
           isNeedChange = true
           content = await replaceAll(content, word,NGWords[word]);
+          console.log(content);
         }
-      })
+      }
       if(isNeedChange){
-        msg.delete();
-        msg.reply(content);
+        await msg.delete();
+        await msg.reply(content);
       }
       if(anl.on){
           anl.cnt++;
