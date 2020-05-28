@@ -330,47 +330,45 @@ const checkRepo = async(msg) =>{
 client.on('presenceUpdate', async(oldUser, newUser) => {
   if(newUser.guild !== server) return;
   const cacheData = await {"status": newUser.status, "id": newUser.userID};
-  if(await activityTimeCache !== await cacheData){
-    activityTimeCache = cacheData;
-    console.log("EventFound.");
-    if((newUser.user.bot)&&(oldUser.status !== newUser.status)){
-      const member = newUser.member;
-      const botStatus = newUser.status;
-      console.dir(botStatus);
-      if(botStatus == "online"){
-        const embed = embedAlert(`${member.user.username} がオンラインになりました`, "長期アップデートにより、より危険な仕様に変更されている可能性があります", 16711680, new Date(), member.user.displayAvatarURL());
-        channel.send({embed});
+  activityTimeCache = cacheData;
+  console.log("EventFound.");
+  if((newUser.user.bot)&&(oldUser.status !== newUser.status)){
+    const member = newUser.member;
+    const botStatus = newUser.status;
+    console.dir(botStatus);
+    if(botStatus == "online"){
+      const embed = embedAlert(`${member.user.username} がオンラインになりました`, "長期アップデートにより、より危険な仕様に変更されている可能性があります", 16711680, new Date(), member.user.displayAvatarURL());
+      channel.send({embed});
+    }
+    if(botStatus == "offline"){
+      const embed = embedAlert(`${member.user.username} がオフラインになりました`, "長期アップデートにより、危険な仕様が追加される可能性があります。", 16312092, new Date(), "https://i.imgur.com/LQiUEtF.png");
+      channel.send({embed});
+    }
+  }
+  if((!server.members.cache.get(oldUser.userID).user.bot)&&(oldUser.activities.length < newUser.activities.length)&&(newUser.activities[0].name != "Custom Status")){
+    console.log("got it!");
+    const member = server.members.cache.get(oldUser.userID);
+    const isVS = (newUser.activities[0].name.indexOf("Visual Studio") !== -1)
+    if (!isVS) return;
+    const color = isVS ? 16312092 : 5301186;
+    const name = member.nickname !== null ? member.nickname : member.user.username;
+    const description = isVS ? `危険なアプリケーションが開発される恐れがあります。\n${name}:\n\`\`\`さて、、、いっちょなにか作ってやりますか(ｷﾘｯ\`\`\`` : `\n${name}:\n\`\`\`もうﾏﾁﾞ無理…ﾏﾘｶしよ…ﾌﾞｫｫｫｫｫｫｫﾝwwwwwwｲｲｨｨｨｨｨﾔｯﾌｩｩｩｩｩwwwwww\`\`\``
+    let embed = {
+      "title": `${name}は**${newUser.activities[0].name}**を起動しました`,
+      "description": description,
+      "color": color,
+      "timestamp": new Date(),
+      "thumbnail": {
+        "url": member.user.displayAvatarURL()
       }
-      if(botStatus == "offline"){
-        const embed = embedAlert(`${member.user.username} がオフラインになりました`, "長期アップデートにより、危険な仕様が追加される可能性があります。", 16312092, new Date(), "https://i.imgur.com/LQiUEtF.png");
-        channel.send({embed});
+    };
+    if(newUser.activities[0].name.indexOf("Visual Studio Code") !== -1 ){
+      embed.author = {
+        "name": "Bony SECURE ALART",
+        "icon_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/OOjs_UI_icon_alert-yellow.svg/40px-OOjs_UI_icon_alert-yellow.svg.png"
       }
     }
-    if((!server.members.cache.get(oldUser.userID).user.bot)&&(oldUser.activities.length < newUser.activities.length)&&(newUser.activities[0].name != "Custom Status")){
-      console.log("got it!");
-      const member = server.members.cache.get(oldUser.userID);
-      const isVS = (newUser.activities[0].name.indexOf("Visual Studio") !== -1)
-      if (!isVS) return;
-      const color = isVS ? 16312092 : 5301186;
-      const name = member.nickname !== null ? member.nickname : member.user.username;
-      const description = isVS ? `危険なアプリケーションが開発される恐れがあります。\n${name}:\n\`\`\`さて、、、いっちょなにか作ってやりますか(ｷﾘｯ\`\`\`` : `\n${name}:\n\`\`\`もうﾏﾁﾞ無理…ﾏﾘｶしよ…ﾌﾞｫｫｫｫｫｫｫﾝwwwwwwｲｲｨｨｨｨｨﾔｯﾌｩｩｩｩｩwwwwww\`\`\``
-      let embed = {
-        "title": `${name}は**${newUser.activities[0].name}**を起動しました`,
-        "description": description,
-        "color": color,
-        "timestamp": new Date(),
-        "thumbnail": {
-          "url": member.user.displayAvatarURL()
-        }
-      };
-      if(newUser.activities[0].name.indexOf("Visual Studio Code") !== -1 ){
-        embed.author = {
-          "name": "Bony SECURE ALART",
-          "icon_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/OOjs_UI_icon_alert-yellow.svg/40px-OOjs_UI_icon_alert-yellow.svg.png"
-        }
-      }
-      channel.send({ embed });
-    }
+    channel.send({ embed });
   }
 })
 
