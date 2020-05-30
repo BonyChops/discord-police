@@ -5,7 +5,6 @@ const fs = require('fs');
 const accessToken = JSON.parse(fs.readFileSync(__dirname+'/accessToken.json', 'utf8')).token;
 const ids = JSON.parse(fs.readFileSync(__dirname+'/settings.json', 'utf8'));
 let genkaiData;
-const googleTTS = require('google-tts-api');
 const saveGenkaiData = (data) => { fs.writeFile('genkaiData.json', JSON.stringify(data, null, '    '), (err)=>{if(err) console.log(`error!::${err}`)})};
 try {fs.statSync(__dirname+'/apiLaunched.json'); }catch (e){ data = {"time": 0}; fs.writeFile(__dirname+'/apiLaunched.json', JSON.stringify(data, null, '    '), (err)=>{if(err) console.log(`error!::${err}`)}).then(fs.chmod(__dirname+'/apiLaunched.json', 0o600));};
 const replaceAll = (str, beforeStr, afterStr) => {
@@ -172,7 +171,7 @@ if (fs.existsSync('apiLaunched.json')) {
             "inline": true
           }
         ]
-        embed = await embedAlert(title, description, 65280, todoDate, member.user.displayAvatarURL(), fields);
+        embed = await embedAlert(title, description, 11175687, todoDate, member.user.displayAvatarURL(), fields);
         actCh.send({embed});
       }
     }
