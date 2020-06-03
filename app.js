@@ -331,6 +331,37 @@ const checkRepo = async(msg) =>{
 
 
 
+const hashAutoAdd = async(msg) => {
+  const categoryCh = server.channels.cache.find(ch => (ch.name.toLowerCase() == "hashtags")&&(ch.type == "category"));
+  let hashes = msg.content.split(" ").filter(msg => ((msg.indexOf("#") !== -1)&&(isNaN(msg.substr(1))&&(msg.substr(1).search(/>$/) === -1))));
+  hashes = hashes.map(msg => msg.substr(msg.indexOf("#")));
+  let hashChs = [];
+  let nameCache = [];
+  let isNewHash = false;
+  for (let i = 0; i < hashes.length; i++) {
+    let hashName = await hashes[i].substr(1);
+    if((server.channels.cache.find(ch => ch.name == hashName) === undefined)&&(nameCache.find(el => el == hashName) === undefined)){
+      hashChs[i] = await server.channels.create(hashName, {parent: categoryCh});
+      await nameCache.push(hashes[hashName]);
+      isNewHash = true;
+    }else{
+      hashChs[i] = await server.channels.cache.find(ch => ch.name == hashChs[i]);
+    }
+  }
+  console.dir(hashes);
+  let sendMes = msg.content;
+  if(isNewHash){
+    for (let i = 0; i < hashChs.length; i++) {
+      sendMes = await sendMes.replace(hashes[i], `<#${hashChs[i].id}>`);
+      console.log(hashChs[i].id);
+    }
+    msg.delete();
+    console.log(sendMes);
+    msg.reply(sendMes);
+  }
+
+}
+
 client.on('presenceUpdate', async(oldUser, newUser) => {
   if(newUser.guild !== server) return;
   const cacheData = await {"status": newUser.status, "id": newUser.userID};
@@ -463,6 +494,7 @@ client.on('message', async msg => {
       }
       if(msg.content.indexOf("!sushi") !== -1) sushi(msg);
       if(msg.content.indexOf("!member") !== -1) memberChecker(msg);
+      if(msg.content.indexOf("#") !== -1) hashAutoAdd(msg);
       if((msg.content.search(/ふ{2,}\.{2,}$/) !== -1)||(msg.content.search(/(ふっ){2,}/) !== -1)||(msg.content.search(/(はっ){2,}/) !== -1)||(msg.content.search(/OTTO/) !== -1)) {
         embed = embedAlert("危険思考はおやめください","鯖の治安悪化に繋がりかねません。",16312092,new Date(), "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/OOjs_UI_icon_alert-yellow.svg/40px-OOjs_UI_icon_alert-yellow.svg.png");
         msg.channel.send({embed});
