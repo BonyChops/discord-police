@@ -368,7 +368,7 @@ client.on('presenceUpdate', async(oldUser, newUser) => {
   activityTimeCache = cacheData;
   console.log("EventFound.");
   const member = server.members.cache.get(newUser.userID);
-  if((newUser.user.bot)&&((oldUser === undefined)||(oldUser.status !== newUser.status))&&(member.roles.cache.find(role => role.name == "DEVELOPING") !== undefined)){
+  if((newUser.user.bot)&&((oldUser === undefined)||(oldUser.status !== newUser.status))&&(member.roles.cache.find(role => role.name == "DEVELOPING") === undefined)){
     const member = newUser.member;
     const botStatus = newUser.status;
     console.dir(botStatus);
