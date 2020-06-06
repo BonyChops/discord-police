@@ -496,6 +496,8 @@ client.on('message', async msg => {
       if(msg.content.indexOf("!sushi") !== -1) sushi(msg);
       if(msg.content.indexOf("!member") !== -1) memberChecker(msg);
       if(msg.content.indexOf("#") !== -1) hashAutoAdd(msg);
+      if(msg.content.toLowerCase().indexOf("!msginfo") !== -1) getMesInfo(msg);
+      if(msg.content.toLowerCase().indexOf("!gettimestamp") !== -1) getTimestamp(msg);
       if((msg.content.search(/ふ{2,}\.{2,}$/) !== -1)||(msg.content.search(/(ふっ){2,}/) !== -1)||(msg.content.search(/(はっ){2,}/) !== -1)||(msg.content.search(/OTTO/) !== -1)) {
         embed = embedAlert("危険思考はおやめください","鯖の治安悪化に繋がりかねません。",16312092,new Date(), "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/OOjs_UI_icon_alert-yellow.svg/40px-OOjs_UI_icon_alert-yellow.svg.png");
         msg.channel.send({embed});
@@ -503,7 +505,7 @@ client.on('message', async msg => {
       if(realtimeScanDisable){
         return
       }
-      if(msg.content.indexOf("!forceBlock") !== -1){
+      if(msg.content.toLowerCase().indexOf("!forceblock") !== -1){
         anl.cnt = 100;
         msg.channel.send("強制的にブロック処理を行います。※試験的機能としてお使いください。");
       }
@@ -531,6 +533,31 @@ client.on('message', async msg => {
 
 client.login(accessToken);
 
+const getTimestamp = (msg) => {
+  const timeStamp = msg.content.substr(msg.content.toLowerCase().indexOf("!gettimestamp") + 3+4+5+1);
+  const date = new Date(Number(timeStamp));
+  msg.channel.send("```"+date.toLocaleString()+"```");
+}
+
+const getMesInfo = (msg) => {
+  const url = msg.content.substr(msg.content.toLowerCase().indexOf("!msginfo") + 8).trim().split("/");
+  //Ex: https://discordapp.com/channels/688624658286772394/711266999099195430/716899671334715522
+  const channel = msg.guild.channels.cache.find(channel => channel.id == url[5]);
+  channel.fetch();
+  console.log(url[5])
+  console.log(channel.name);
+  console.dir(channel.messages.cache.filter(message => message.content !== undefined))
+  channel.messages.fetch(url[6])
+  .then(message =>{
+    console.log(message.content)
+    msg.channel.send(`\`\`\` ${JSON.stringify(message, null, '    ')}  \`\`\``)
+    console.log("OK");
+  })
+  .catch(e => {
+    channel.send("```"+e+"```")
+  });
+
+}
 const sushi = async(msg) =>{
     await waitAndSay(msg.channel, 'ハマチ！',250);
     await waitAndSay(msg.channel, '中トロ！',250);
