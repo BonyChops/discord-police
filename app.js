@@ -496,13 +496,20 @@ client.on('message', async msg => {
     }
     if (msg.content.indexOf("!sushi") !== -1) sushi(msg);
     if (msg.content.indexOf("!stripe") !== -1) {
-      const line = "<:bony_white:749663187128811658><:bony_black:749663223812325448>".repeat(6) + "\n";
+      const line = "<:bony_white:749663187128811658><:bony_black:749663223812325448>".repeat(6);
+      for (let i = 0; i < 6; i++) {
+        msg.channel.send(line);
+
+      }
       msg.channel.send(line.repeat(20).substr(0,1980));
     }
     if (msg.content.indexOf("!jig") !== -1) {
       const line = "<:bony_white:749663187128811658><:bony_black:749663223812325448>".repeat(6) + "\n";
       const line2 = "<:bony_black:749663223812325448><:bony_white:749663187128811658>".repeat(6) + "\n";
-      const lines = line + line2;
+      for (let i = 0; i < 3; i++) {
+        await msg.channel.send(line);
+        await msg.channel.send(line2);
+      }
       msg.channel.send(lines.repeat(10).substr(0,1980));
     }
 
