@@ -495,6 +495,17 @@ client.on('message', async msg => {
       return;
     }
     if (msg.content.indexOf("!sushi") !== -1) sushi(msg);
+    if (msg.content.indexOf("!stripe") !== -1) {
+      const line = "<:bony_white:749663187128811658><:bony_black:749663223812325448>".repeat(6) + "\n";
+      msg.channel.send(line.repeat(20));
+    }
+    if (msg.content.indexOf("!jig") !== -1) {
+      const line = "<:bony_white:749663187128811658><:bony_black:749663223812325448>".repeat(6) + "\n";
+      const line2 = "<:bony_black:749663223812325448><:bony_white:749663187128811658>".repeat(6) + "\n";
+      const lines = line + line2;
+      msg.channel.send(lines.repeat(10));
+    }
+
     if (msg.content.indexOf("!member") !== -1) memberChecker(msg);
     if (msg.content.indexOf("#") !== -1) hashAutoAdd(msg);
     if (msg.content.toLowerCase().indexOf("!msginfo") !== -1) getMesInfo(msg);
