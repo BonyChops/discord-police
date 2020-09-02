@@ -193,14 +193,39 @@ const checkIssue = async (msg) => {
     return;
   }
   if (data.mode === "setTitle") {
-    await resetGUI(data.msg, data.author);
     msg.delete();
+    await resetGUI(data.msg, data.author);
     swMode("checkTitle");
     let title = issueGUIData[msg.author.id].title = msg.content;
-    await data.msg.react("✅");
-    await data.msg.react("❌");
-    await edit(data.msg, data.msg.author, embedAlert(`タイトルを設定 - ${data.repo.full_name}への通報(Issue)`, `以下のタイトルでよろしいですか？`, "#FF0000", new Date(), data.img, [{ name: "タイトル", value: `\`${title}\`` }]));
+    data = issueGUIData[msg.author.id];
+    issueCheckTitle(data);
   }
+  if (data.mode === "setContent") {
+    msg.delete();
+    await resetGUI(data.msg, data.author);
+    swMode("checkContent");
+    let content = issueGUIData[msg.author.id].content = msg.content;
+    data = issueGUIData[msg.author.id];
+    issueCheckContent(data);
+  }
+}
+
+const issueCheckContent = async (data) => {
+  const edit = async (msg, author, embed) => {
+    msg.edit(`<@${author.id}>`, { embed });
+  }
+  await data.msg.react("✅");
+  await data.msg.react("❌");
+  await edit(data.msg, data.msg.author, embedAlert(`最終確認 - ${data.repo.full_name}への通報(Issue)`, `以下の内容でIssueをたてます。よろしいですか？`, "#FF0000", new Date(), data.img, [{ name: data.title, value: data.content }]));
+}
+
+const issueCheckTitle = async (data) => {
+  const edit = async (msg, author, embed) => {
+    msg.edit(`<@${author.id}>`, { embed });
+  }
+  await data.msg.react("✅");
+  await data.msg.react("❌");
+  await edit(data.msg, data.msg.author, embedAlert(`タイトルを設定 - ${data.repo.full_name}への通報(Issue)`, `以下のタイトルでよろしいですか？`, "#FF0000", new Date(), data.img, [{ name: "タイトル", value: `\`${data.title}\`` }]));
 }
 
 const issueSetTitle = async (data) => {
@@ -210,6 +235,15 @@ const issueSetTitle = async (data) => {
   await data.msg.react("❌");
   await edit(data.msg, data.msg.author, embedAlert(`タイトルを設定 - ${data.repo.full_name}への通報(Issue)`, `Issueのタイトルを入力してください。`, "#FF0000", new Date(), data.img));
 }
+
+const issueSetContent = async (data) => {
+  const edit = async (msg, author, embed) => {
+    msg.edit(`<@${author.id}>`, { embed });
+  }
+  await data.msg.react("❌");
+  await edit(data.msg, data.msg.author, embedAlert(`内容を設定 - ${data.repo.full_name}への通報(Issue)`, `Issue: \`${data.title}\`の内容を入力してください。`, "#FF0000", new Date(), data.img));
+}
+
 
 client.on('messageReactionAdd', async (react, user) => {
   const sliceBy = (array, num) => {
@@ -263,6 +297,8 @@ client.on('messageReactionAdd', async (react, user) => {
       issueGUIData[user.id].repo = undefined;
       issueGUIData[user.id].mode = mode = "generated";
       react.emoji.name = "✅";
+    }else if(react.emoji.name === "✅"){
+      swMode("setTitle");
     }
   }
   if (mode === "generated") {
@@ -292,7 +328,7 @@ client.on('messageReactionAdd', async (react, user) => {
     if (num === false) {
       return;
     }
-    issueGUIData[data.author.id].owner = ids.userData[num].github;
+    issueGUIData[data.author.id].owner = await ids.userData[num].github;
     if (issueGUIData[data.author.id].owner === undefined) {
       cancel(data.author, "`エラー`");
     }
@@ -319,10 +355,30 @@ client.on('messageReactionAdd', async (react, user) => {
     }
   }
   data = issueGUIData[user.id];
+  if (mode == "checkContent") {
+    if (react.emoji.name === "❌") {
+      swMode("setContent");
+      react.emoji.name = "✅";
+    } else if (react.emoji.name === "✅") {
+      mesEdit("`Issueをたてています...`", data.author);
+      gh.getIssues(data.owner, data.repo.name).createIssue({title: data.title, body: data.content}).then(repo => repo.data);
+    }
+  }
+
   if (mode == "checkTitle") {
     if (react.emoji.name === "❌") {
       swMode("setTitle");
+      react.emoji.name = "✅";
+    } else if (react.emoji.name === "✅") {
+      swMode("setContent");
     }
+  }
+  if (mode == "setContent") {
+    if (react.emoji.name === "❌") {
+      swMode("checkTitle");
+      issueCheckTitle(data);
+    }
+    issueSetContent(data);
   }
   if (mode == "setTitle") {
     if (react.emoji.name === "❌") {
@@ -331,6 +387,7 @@ client.on('messageReactionAdd', async (react, user) => {
     }
     issueSetTitle(data);
   }
+
 
   if (mode == "ownerChose") {
     data = issueGUIData[user.id];
@@ -381,7 +438,7 @@ const createIssue = async (msg) => {
   issueGUIData[msg.author.id] = new Object();
   issueGUIData[msg.author.id].msg = gui;
   issueGUIData[msg.author.id].author = msg.author;
-  issueGUIData[msg.author.id].mode = botData === undefined ? "generated" : "setTitle";
+  issueGUIData[msg.author.id].mode = botData === undefined ? "generated" : "targeted";
   if (botData !== undefined) {
     issueGUIData[msg.author.id].repo = await gh.getRepo(botData.owner, botData.repo).getDetails().then(repo => repo.data);
     console.log(issueGUIData[msg.author.id].repo)
