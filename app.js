@@ -174,11 +174,11 @@ client.on('message', async msg => {
   }
 });
 
-const checkIssue = async(msg) => {
+const checkIssue = async (msg) => {
   const mesEdit = async (content, author) => {
     issueGUIData[author.id].msg.edit(content, { embed: null });
   }
-  const resetGUI = async(msg, author) => {
+  const resetGUI = async (msg, author) => {
     mesEdit(`<@${author.id}>, \`お待ちください...\``, author);
     msg.reactions.removeAll();
   }
@@ -199,7 +199,7 @@ const checkIssue = async(msg) => {
     let title = issueGUIData[msg.author.id].title = msg.content;
     await data.msg.react("✅");
     await data.msg.react("❌");
-    await edit(data.msg, data.msg.author, embedAlert(`タイトルを設定 - ${data.repo.full_name}への通報(Issue)`, `以下のタイトルでよろしいですか？`, "#FF0000", new Date(), data.img, [{name:"タイトル", value: `\`${title}\``}]));
+    await edit(data.msg, data.msg.author, embedAlert(`タイトルを設定 - ${data.repo.full_name}への通報(Issue)`, `以下のタイトルでよろしいですか？`, "#FF0000", new Date(), data.img, [{ name: "タイトル", value: `\`${title}\`` }]));
   }
 }
 
@@ -319,6 +319,11 @@ client.on('messageReactionAdd', async (react, user) => {
     }
   }
   data = issueGUIData[user.id];
+  if (mode == "checkTitle") {
+    if (react.emoji.name === "❌") {
+      swMode("setTitle");
+    }
+  }
   if (mode == "setTitle") {
     if (react.emoji.name === "❌") {
       cancel(data.author);
