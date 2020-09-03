@@ -216,7 +216,7 @@ const issueCheckContent = async (data) => {
   }
   await data.msg.react("✅");
   await data.msg.react("❌");
-  await edit(data.msg, data.msg.author, embedAlert(`最終確認 - ${data.repo.full_name}への通報(Issue)`, `以下の内容でIssueをたてます。よろしいですか？`, "#FF0000", new Date(), data.img, [{ name: data.title, value: data.content }]));
+  await edit(data.msg, data.author, embedAlert(`最終確認 - ${data.repo.full_name}への通報(Issue)`, `以下の内容でIssueをたてます。よろしいですか？`, "#FF0000", new Date(), data.img, [{ name: data.title, value: data.content }]));
 }
 
 const issueCheckTitle = async (data) => {
@@ -225,7 +225,7 @@ const issueCheckTitle = async (data) => {
   }
   await data.msg.react("✅");
   await data.msg.react("❌");
-  await edit(data.msg, data.msg.author, embedAlert(`タイトルを設定 - ${data.repo.full_name}への通報(Issue)`, `以下のタイトルでよろしいですか？`, "#FF0000", new Date(), data.img, [{ name: "タイトル", value: `\`${data.title}\`` }]));
+  await edit(data.msg, data.author, embedAlert(`タイトルを設定 - ${data.repo.full_name}への通報(Issue)`, `以下のタイトルでよろしいですか？`, "#FF0000", new Date(), data.img, [{ name: "タイトル", value: `\`${data.title}\`` }]));
 }
 
 const issueSetTitle = async (data) => {
@@ -233,7 +233,7 @@ const issueSetTitle = async (data) => {
     msg.edit(`<@${author.id}>`, { embed });
   }
   await data.msg.react("❌");
-  await edit(data.msg, data.msg.author, embedAlert(`タイトルを設定 - ${data.repo.full_name}への通報(Issue)`, `Issueのタイトルを入力してください。`, "#FF0000", new Date(), data.img));
+  await edit(data.msg, data.author, embedAlert(`タイトルを設定 - ${data.repo.full_name}への通報(Issue)`, `Issueのタイトルを入力してください。`, "#FF0000", new Date(), data.img));
 }
 
 const issueSetContent = async (data) => {
@@ -241,13 +241,12 @@ const issueSetContent = async (data) => {
     msg.edit(`<@${author.id}>`, { embed });
   }
   await data.msg.react("❌");
-  await edit(data.msg, data.msg.author, embedAlert(`内容を設定 - ${data.repo.full_name}への通報(Issue)`, `Issue: \`${data.title}\`の内容を入力してください。`, "#FF0000", new Date(), data.img));
+  await edit(data.msg, data.author, embedAlert(`内容を設定 - ${data.repo.full_name}への通報(Issue)`, `Issue: \`${data.title}\`の内容を入力してください。`, "#FF0000", new Date(), data.img));
 }
 
 
 client.on('messageReactionAdd', async (react, user) => {
   const sliceBy = (array, num) => {
-    console.log(array);
     let parts = [];
     return array.reduce((acc, data, index) => {
       parts.push(data);
@@ -268,10 +267,13 @@ client.on('messageReactionAdd', async (react, user) => {
     mesEdit(`<@${author.id}>, \`お待ちください...\``, author);
     msg.reactions.removeAll();
   }
-  const cancel = async (author, content = "`このIssueフォームはCloseされました`") => {
+  const close = (author) => {
     issueGUIData[author.id].msg.reactions.removeAll();
-    mesEdit(content, author);
     issueGUIData[author.id] = undefined;
+  }
+  const cancel = async (author, content = "`このIssueフォームはCloseされました`") => {
+    mesEdit(content, author);
+    close(author);
   }
   const numRequired = (react) => {
     if (react.emoji.name.substr(1) !== "\uFE0F\u20E3") {
@@ -297,7 +299,7 @@ client.on('messageReactionAdd', async (react, user) => {
       issueGUIData[user.id].repo = undefined;
       issueGUIData[user.id].mode = mode = "generated";
       react.emoji.name = "✅";
-    }else if(react.emoji.name === "✅"){
+    } else if (react.emoji.name === "✅") {
       swMode("setTitle");
     }
   }
@@ -310,7 +312,7 @@ client.on('messageReactionAdd', async (react, user) => {
         return await acc;
       }, "");
       await data.msg.react("❌");
-      await edit(data.msg, data.msg.author, embedAlert("開発者を選択 - 通報(Issue)", `該当する開発者を選択してください。\n\`\`\`${userStr}\`\`\``, "#FF0000", new Date(), "https://i.imgur.com/3wSKpGi.png"));
+      await edit(data.msg, data.author, embedAlert("開発者を選択 - 通報(Issue)", `該当する開発者を選択してください。\n\`\`\`${userStr}\`\`\``, "#FF0000", new Date(), "https://i.imgur.com/3wSKpGi.png"));
       swMode("chooseOwner");
     } else if (react.emoji.name === "❌") {
       cancel(data.author);
@@ -361,7 +363,21 @@ client.on('messageReactionAdd', async (react, user) => {
       react.emoji.name = "✅";
     } else if (react.emoji.name === "✅") {
       mesEdit("`Issueをたてています...`", data.author);
-      gh.getIssues(data.owner, data.repo.name).createIssue({title: data.title, body: data.content}).then(repo => repo.data);
+      await gh.getIssues(data.repo.owner.login, data.repo.name).createIssue({ title: data.title, body: data.content })
+        .then((body) => edit(data.msg, data.author, {
+          title: `<:issue_open:750967991126196334> Issue opened: ${body.data.title} #${body.data.number}`,
+          description: body.data.body,
+          color: "#28a745",
+          timestamp: new Date(),
+          thumbnail: {
+            url: data.img
+          },
+          url: body.data.url,
+          footer: {
+            "text": data.repo.full_name
+          },
+        })).catch((err) => cancel(data.author, "`エラー`\n```" + err.statusCode + "```\n```" + err.body + "```"));
+      close(data.author);
     }
   }
 
@@ -391,7 +407,7 @@ client.on('messageReactionAdd', async (react, user) => {
 
   if (mode == "ownerChose") {
     data = issueGUIData[user.id];
-    console.log(data.owner);
+    //console.log(data.owner);
     if (data.pickedRepos === undefined) issueGUIData[data.author.id].pickedRepos = new Object();
     if (data.pickedRepos.repos === undefined) {
       issueGUIData[data.author.id].pickedRepos.repos = await sliceBy(await gh.getUser(data.owner).listRepos().then(repo => repo.data), 10);
@@ -411,7 +427,7 @@ client.on('messageReactionAdd', async (react, user) => {
     }, "");
     if (data.pickedRepos.cnt + 1 < data.pickedRepos.repos.length) await data.msg.react("▶");
     await data.msg.react("❌");
-    await edit(data.msg, data.msg.author, embedAlert("レポジトリを選択 - 通報(Issue)", `該当するレポジトリを選択してください。`, "#FF0000", new Date(), data.img,
+    await edit(data.msg, data.author, embedAlert("レポジトリを選択 - 通報(Issue)", `該当するレポジトリを選択してください。`, "#FF0000", new Date(), data.img,
       [{ name: "Page: " + `${data.pickedRepos.cnt + 1} / ${data.pickedRepos.repos.length}`, value: `\`\`\`${userStr}\`\`\`` }]));
     swMode("selectRepos");
   }
@@ -419,9 +435,14 @@ client.on('messageReactionAdd', async (react, user) => {
 
 const createIssue = async (msg) => {
   let botData;
+  const msgParam = msg.content.split(" ");
   if (msgArchive !== false && msgArchive !== undefined) {
     botData = ids.botsData.find(bot => bot.id == msgArchive.author.id);
   }
+  if (msgParam[1] !== undefined) {
+    botData = ids.botsData.find(bot => bot.id == msgParam[1]);
+  }
+
   if (issueGUIData[msg.author.id] !== undefined) {
     issueGUIData[msg.author.id].msg.reactions.removeAll();
     issueGUIData[msg.author.id].msg.edit("`このIssueフォームはCloseされました`", { embed: null });
@@ -443,6 +464,7 @@ const createIssue = async (msg) => {
     issueGUIData[msg.author.id].repo = await gh.getRepo(botData.owner, botData.repo).getDetails().then(repo => repo.data);
     console.log(issueGUIData[msg.author.id].repo)
     issueGUIData[msg.author.id].img = botData.img;
+    issueGUIData[data.author.id].owner = await ids.userData[num].github;
   }
   msgArchiveCnt = 0;
   msgArchive = undefined;
