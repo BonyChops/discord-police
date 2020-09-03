@@ -372,7 +372,7 @@ client.on('messageReactionAdd', async (react, user) => {
           thumbnail: {
             url: data.img
           },
-          url: body.data.url,
+          url: body.data.html_url,
           footer: {
             "text": data.repo.full_name
           },
