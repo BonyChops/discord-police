@@ -363,7 +363,7 @@ client.on('messageReactionAdd', async (react, user) => {
       react.emoji.name = "✅";
     } else if (react.emoji.name === "✅") {
       mesEdit("`Issueをたてています...`", data.author);
-      const postedBy = ids.userData.find(user => user.discord == user.tag).github;
+      const postedBy = ids.userData.find(userData => userData.discord == user.tag).github;
       await gh.getIssues(data.repo.owner.login, data.repo.name).createIssue({ title: data.title, body: data.content + `\n\n> This issue was posted by @${postedBy}` })
         .then((body) => edit(data.msg, data.author, {
           title: `<:issue_open:750967991126196334> Issue opened: ${body.data.title} #${body.data.number}`,
