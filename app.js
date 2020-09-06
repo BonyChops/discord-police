@@ -843,8 +843,9 @@ client.on('presenceUpdate', async (oldUser, newUser) => {
     const color = isVS ? 16312092 : 5301186;
     const name = member.nickname !== null ? member.nickname : member.user.username;
     const description = isVS ? `危険なアプリケーションが開発される恐れがあります。\n${name}:\n\`\`\`さて、、、いっちょなにか作ってやりますか(ｷﾘｯ\`\`\`` : `\n${name}:\n\`\`\`もうﾏﾁﾞ無理…ﾏﾘｶしよ…ﾌﾞｫｫｫｫｫｫｫﾝwwwwwwｲｲｨｨｨｨｨﾔｯﾌｩｩｩｩｩwwwwww\`\`\``
+    const title = newUser.activities[0].name.indexOf("Visual Studio Code") !== -1 ? `${name}は<:vscode:751814332907520051>${newUser.activities[0].name}を起動しました` : `${name}は${newUser.activities[0].name}を起動しました`
     let embed = {
-      "title": `${name}は**${newUser.activities[0].name}**を起動しました`,
+      title,
       "description": description,
       "color": color,
       "timestamp": new Date(),
