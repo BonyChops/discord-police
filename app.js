@@ -131,6 +131,7 @@ client.on('message', async msg => {
 
     if (msg.content.indexOf("!member") !== -1) memberChecker(msg);
     if (msg.content.indexOf("#") !== -1) hashAutoAdd(msg);
+    if (msg.content.toLowerCase().indexOf("shine") !== -1) msg.channel.send("✨");
     if (msg.content.toLowerCase().indexOf("!msginfo") !== -1) getMesInfo(msg);
     if (msg.content.toLowerCase().indexOf("!userinfo") !== -1) getUserInfo(msg);
     if (msg.content.toLowerCase().indexOf("!gettimestamp") !== -1) getTimestamp(msg);
