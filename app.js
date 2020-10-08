@@ -211,6 +211,48 @@ const checkIssue = async (msg) => {
   }
 }
 
+client.on('emojiCreate', async emoji => {
+  let embed = embedAlert("危険な絵文字が追加されました", `鯖で不必要に乱用される可能性があります<:${emoji.name}:${emoji.id}>`, 16312092, new Date(), emoji.url);
+  embed.author = {
+    "name": "Bony SECURE ALART",
+    "icon_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/OOjs_UI_icon_alert-yellow.svg/40px-OOjs_UI_icon_alert-yellow.svg.png"
+  };
+  embed.fields = [
+    {
+      name: "id",
+      value: `\`${emoji.id}\``
+    },
+    {
+      name: "name",
+      value: `\`${emoji.name}\``
+    },
+  ]
+  channel.send("", { embed });
+});
+
+client.on('emojiUpdate', async (oldEmoji, emoji) => {
+  let embed = embedAlert("危険な絵文字が更新されました",
+    `鯖で不必要に乱用される可能性があります<:${emoji.name}:${emoji.id}>`,
+    16312092,
+    new Date(),
+    emoji.url);
+  embed.author = {
+    "name": "Bony SECURE ALART",
+    "icon_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/OOjs_UI_icon_alert-yellow.svg/40px-OOjs_UI_icon_alert-yellow.svg.png"
+  };
+  embed.fields = [
+    {
+      name: "id",
+      value: `\`${emoji.id}\``
+    },
+    {
+      name: "name",
+      value: `\`${emoji.name}\``
+    },
+  ]
+  channel.send("", { embed });
+});
+
 const issueCheckContent = async (data) => {
   const edit = async (msg, author, embed) => {
     msg.edit(`<@${author.id}>`, { embed });
@@ -1016,7 +1058,7 @@ const startCheck = async (channel, server) => {
     await channel.send({ embed, "tts": false });
     logCh.send({ embed, "tts": false });
     let blockedRoles = await server.roles.cache.filter(role => role.name === "BLOCKED");
-    await blockedRoles.forEach(role => { try { role.delete() } catch{ console.log('lol') } });
+    await blockedRoles.forEach(role => { try { role.delete() } catch { console.log('lol') } });
     await client.user.setPresence({
       status: "online",  //You can show online, idle....
       activity: {
