@@ -881,12 +881,12 @@ client.on('presenceUpdate', async (oldUser, newUser) => {
   if ((!server.members.cache.get(oldUser.userID).user.bot) && (oldUser.activities.length < newUser.activities.length) && (newUser.activities[0].name != "Custom Status")) {
     console.log("got it!");
     const member = server.members.cache.get(oldUser.userID);
-    const isVS = (newUser.activities[0].name.indexOf("Visual Studio") !== -1)
+    const isVS = ((newUser.activities[0].name.indexOf("Visual Studio") !== -1) || (newUser.activities[0].name.indexOf("Eclipse") !== -1))
     if (!isVS) return;
     const color = isVS ? 16312092 : 5301186;
     const name = member.nickname !== null ? member.nickname : member.user.username;
     const description = isVS ? `危険なアプリケーションが開発される恐れがあります。\n${name}:\n\`\`\`さて、、、いっちょなにか作ってやりますか(ｷﾘｯ\`\`\`` : `\n${name}:\n\`\`\`もうﾏﾁﾞ無理…ﾏﾘｶしよ…ﾌﾞｫｫｫｫｫｫｫﾝwwwwwwｲｲｨｨｨｨｨﾔｯﾌｩｩｩｩｩwwwwww\`\`\``
-    const title = newUser.activities[0].name.indexOf("Visual Studio Code") !== -1 ? `${name}は<:vscode:751814332907520051>${newUser.activities[0].name}を起動しました` : `${name}は${newUser.activities[0].name}を起動しました`
+    const title = newUser.activities[0].name.indexOf("Eclipse") !== -1 ? `${name}は<:eclipse:762538625538850836>${newUser.activities[0].name}を起動しました` : newUser.activities[0].name.indexOf("Visual Studio Code") !== -1 ? `${name}は<:vscode:751814332907520051>${newUser.activities[0].name}を起動しました` : `${name}は${newUser.activities[0].name}を起動しました`
     let embed = {
       title,
       "description": description,
