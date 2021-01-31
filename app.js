@@ -19,7 +19,6 @@ const replaceAll = (str, beforeStr, afterStr) => {
   return str.replace(reg, afterStr);
 }
 
-
 try {
   genkaiData = JSON.parse(fs.readFileSync(__dirname + '/genkaiData.json', 'utf8'));
 } catch (e) {
@@ -748,9 +747,10 @@ const genkaiCheck = async () => {
 const memberChecker = (msg) => {
   const members = msg.guild.members.cache
   const human = members.filter(member => !member.user.bot);
+  const onlineHuman = human.filter(member => member.user.presence.status !== "offline");
   const bot = members.filter(member => member.user.bot);
   const embed = {
-    "timestamp": "2020-05-12T11:45:24.711Z",
+    "timestamp": new Date(),
     "fields": [
       {
         "name": "人間",
@@ -769,7 +769,15 @@ const memberChecker = (msg) => {
       },
       {
         "name": "BOT率",
-        "value": `${(parseFloat(bot.size) / parseFloat(members.size)) * 100}%`,
+        "value": `${((parseFloat(bot.size) / parseFloat(members.size)) * 100).toFixed(2)}%`,
+        "inline": true
+      }, {
+        "name": "オンラインの人間",
+        "value": `${onlineHuman.size}人`,
+        "inline": true
+      }, {
+        "name": "オンラインの人間",
+        "value": `${((parseFloat(onlineHuman.size) / parseFloat(human.size)) * 100).toFixed(2)}%`,
         "inline": true
       }
     ]
